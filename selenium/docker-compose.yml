@@ -1,0 +1,55 @@
+#
+# https://github.com/SeleniumHQ/docker-selenium/blob/trunk/docker-compose-v3.yml
+# https://github.com/SeleniumHQ/docker-selenium/blob/trunk/README.md#configuring-the-containers
+#
+
+version: "3.8"
+
+services:
+
+  hub:
+    image: selenium/hub:4
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - SE_JAVA_OPTS=-Xms256m -Xmx2048m
+    restart: unless-stopped
+
+  chrome:
+    image: selenium/node-chrome:4
+    ports:
+      - "5900:5900"
+      - "7900:7900"
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_MAX_SESSIONS=4
+      - SE_NODE_SESSION_TIMEOUT=180
+      - SE_OPTS=--log-level FINE
+      - SE_JAVA_OPTS=-Xms256m -Xmx2048m
+      - START_XVFB=true
+      - VNC_NO_PASSWORD=1
+      - VNC_VIEW_ONLY=1
+    shm_size: 2gb
+    depends_on:
+      - hub
+    restart: unless-stopped
+
+  video:
+    image: selenium/video:ffmpeg-4.3.1-20231020
+    volumes:
+      - ./data:/videos
+    ports:
+      - "9000:9000"
+    environment:
+      - DISPLAY_CONTAINER_NAME=chrome
+      - SE_VIDEO_FOLDER=/videos
+      - FILE_NAME=video.mp4
+      - VIDEO_READY_PORT=9000
+    depends_on:
+      - chrome
+    restart: unless-stopped

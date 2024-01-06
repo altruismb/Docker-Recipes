@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+
+  mastodon:
+    image: linuxserver/mastodon:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - LOCAL_DOMAIN=example.com
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=postgres
+      - DB_USER=mastodon
+      - DB_NAME=mastodon
+      - DB_PASS=mastodon
+      - DB_PORT=5432
+      - ES_ENABLED=false
+      - SECRET_KEY_BASE=
+      - OTP_SECRET=
+      - VAPID_PRIVATE_KEY=
+      - VAPID_PUBLIC_KEY=
+      - SMTP_SERVER=mail.example.com
+      - SMTP_PORT=25
+      - SMTP_LOGIN=
+      - SMTP_PASSWORD=
+      - SMTP_FROM_ADDRESS=notifications@example.com
+      - S3_ENABLED=false
+      - WEB_DOMAIN=mastodon.example.com #optional
+      - ES_HOST=es #optional
+      - ES_PORT=9200 #optional
+      - ES_USER=elastic #optional
+      - ES_PASS=elastic #optional
+      - S3_BUCKET= #optional
+      - AWS_ACCESS_KEY_ID= #optional
+      - AWS_SECRET_ACCESS_KEY= #optional
+      - S3_ALIAS_HOST= #optional
+      - SIDEKIQ_ONLY=false #optional
+      - SIDEKIQ_QUEUE= #optional
+      - SIDEKIQ_DEFAULT=false #optional
+      - SIDEKIQ_THREADS=5 #optional
+      - DB_POOL=5 #optional
+    volumes:
+      - ./data/mastodon:/config
+    ports:
+      - "8080:80"
+      - "8443:443"
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:14-alpine
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      # POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=mastodon
+      - POSTGRES_PASSWORD=mastodon
+      - POSTGRES_DB=mastodon
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: --save 900 1
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped

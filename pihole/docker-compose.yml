@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  pihole:
+    image: pihole/pihole
+    ports:
+      - "53:53/udp"
+      - "80:80/tcp"
+    volumes:
+      - ./data/pihole:/etc/pihole
+      - ./data/dnsmasq.d:/etc/dnsmasq.d
+    environment:
+      - TZ=Asia/Shanghai
+      - WEBPASSWORD=******
+      - PIHOLE_DNS_=8.8.8.8#53;8.8.4.4#53
+    restart: unless-stopped

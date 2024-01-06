@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+
+  nextcloud:
+    image: nextcloud:stable-apache
+    ports:
+      - "8080:80"
+    volumes:
+      - ./data/nextcloud:/var/www/html
+    environment:
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.easypi.duckdns.org
+      - OVERWRITEHOST=nextcloud.easypi.duckdns.org
+      - OVERWRITEPROTOCOL=https
+      - PHP_MEMORY_LIMIT=2048M
+      - PHP_UPLOAD_LIMIT=4096M
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=nextcloud
+      - REDIS_HOST=redis
+      - OBJECTSTORE_S3_HOST=oss-cn-beijing.aliyuncs.com
+      - OBJECTSTORE_S3_PORT=443
+      - OBJECTSTORE_S3_SSL=true
+      - OBJECTSTORE_S3_KEY=xxxxxx
+      - OBJECTSTORE_S3_SECRET=xxxxxx
+      - OBJECTSTORE_S3_BUCKET=nextcloud
+      - OBJECTSTORE_S3_USEPATH_STYLE=false
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:14-alpine
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=nextcloud
+      - POSTGRES_DB=nextcloud
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: --save 900 1
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped

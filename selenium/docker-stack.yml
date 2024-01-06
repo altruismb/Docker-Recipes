@@ -1,0 +1,60 @@
+#
+# https://github.com/SeleniumHQ/docker-selenium/blob/trunk/docker-compose-v3-swarm.yml
+#
+# cluster:
+# - manger: 1  (4vCPU, 4GiB MEM)
+# - worker: 10 (8vCPU, 8GiB MEM)
+#
+
+version: '3.8'
+
+services:
+
+  hub:
+    image: selenium/hub:4
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+  chrome:
+    image: selenium/node-chrome:4
+    entrypoint: bash -c 'SE_OPTS="--host $$HOSTNAME" /opt/bin/entry_point.sh'
+    volumes:
+      - type: tmpfs
+        target: /dev/shm
+        tmpfs:
+          size: 2147483648 # numfmt --from=iec 2G
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_MAX_SESSIONS=8
+      - SE_NODE_SESSION_TIMEOUT=180
+      - START_XVFB=true
+      - VNC_NO_PASSWORD=1
+      - VNC_VIEW_ONLY=1
+    depends_on:
+      - hub
+    deploy:
+      replicas: 10
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24

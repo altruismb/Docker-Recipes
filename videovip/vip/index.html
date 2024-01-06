@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" draggable="false">    <!--<meta name="format-detection" content="telephone=no">-->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>尊享VIP电影</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .content{
+            margin: 0 5%;
+        }
+        .movie{
+            margin: 50px auto;
+        }
+        .movie-select{
+            width: 80px;
+            height: 40px;
+            border: 0;
+            font-size: 16px;
+            font-family: YaHei,helvetica;
+            letter-spacing: 1px;
+            color: #999;
+            padding-left: 12px;
+        }
+        .movie-form{
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+
+            align-items: center;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+        }
+        #player-url{
+            display: block;
+            width: 85%;
+            height: 45px;
+            outline: none;
+            border: 1px solid #317ff5;
+            -webkit-border-radius: 5px;
+            -moz-border-radius:5px;
+            border-radius: 5px;
+            padding: 0 10px;
+            margin: 20px 10px 20px 0;
+        }
+        #player_btn{
+            display: block;
+            width: 100px;
+            height: 45px;
+            color: #fff;
+            outline: none;
+            background: #2f7bf2;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            margin-left: -1px;
+            cursor: pointer;
+        }
+        #dplayer{
+            width: 100%;
+            height: 550px;
+            border: 2px solid gold;
+            margin-bottom: 50px;
+        }
+        @media screen and (max-width: 500px) {
+            #dplayer{
+                height: 310px;
+            }
+        }
+        @media screen and (max-width: 980px) {
+
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/dplayer/1.16.0/DPlayer.min.css">
+</head>
+<body>
+    <div class="content">
+        <div class="movie clearfloat">
+            <select class="movie-select">
+                <option value="http://www.52jiexi.com/tong.php?url=">线路1</option>
+                <option value="http://api.baiyug.cn/vip/index.php?url=">线路2</option>
+                <option value="http://jx.2012net.com/index.php?url=">线路3</option>
+                <option value="http://jx.vgoodapi.com/jx.php?url=">线路4</option>
+                <option value="http://api.nepian.com/ckparse/?url=">线路5</option>
+                <option value="https://api.flvsp.com/?url=">线路6</option>
+                <option value="http://vip.jlsprh.com/index.php?url=">线路7</option>
+                <option value="http://2gty.com/apiurl/yun.php?url=">线路8</option>
+                <option value="http://api.baiyug.cn/vip/?url=">百域阁</option>
+            </select>
+            <div class="clearfloat movie-form">
+                <input name="url" id="player-url" class="f-l" type="text" class="text" value="" placeholder="请输入您要观看的视频网址~" />
+                <input name="players" type="button" id="player_btn" class="button" value="立即播放">
+            </div>
+        </div>
+        <div id="ckplays">
+            <iframe id="dplayer" name="websit"></iframe>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/dplayer/1.16.0/DPlayer.min.js"></script>
+    <script>
+        $(function(){
+           function Movice(){
+               this.interface = "";
+               this.init();
+           }
+
+            $.extend(Movice.prototype,{
+                init: function(){
+                    this.event();
+                },
+                event: function(){
+                    var self = this;
+                    $("#player_btn").on("click",function(){
+                        self.play();
+                    });
+
+                    $(".movie-select").on("change",function(e){
+                        var url = $("#player-url").val();
+                        if (url == "") {
+                            alert("请在左侧输入框中输入您要观看的视频网址~");
+                        }else {
+                            self.interface = e.value;
+                        }
+                    });
+                },
+                play: function(){
+                    var self = this,url = $("#player-url").val();
+                    if (url == "") {
+                        alert("请在左侧输入框中输入您要观看的视频网址~");
+                        return false;
+                    }
+
+                    if (url.indexOf("://") == -1) {
+                        url = "http://" + url;
+                    }
+
+                    if(self.interface == ""){
+                        document.getElementById("dplayer").src = "https://api.47ks.com/webcloud/?v=" + url;
+                    }else{
+                        document.getElementById("dplayer").src = self.interface + url;
+                    }
+
+
+
+                }
+            });
+
+
+            new Movice();
+        });
+    </script>
+</body>
+</html>

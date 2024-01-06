@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+
+  semaphore:
+    image: semaphoreui/semaphore:v2.9.37
+    ports:
+      - "3000:3000"
+    volumes:
+      #- ./data:/var/lib/semaphore/
+      - ./data:/etc/semaphore
+    environment:
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+      #SEMAPHORE_DB_DIALECT: bolt
+      #SEMAPHORE_DB_PATH: /var/lib/semaphore
+      SEMAPHORE_DB_DIALECT: postgres
+      SEMAPHORE_DB_USER: semaphore
+      SEMAPHORE_DB_PASS: semaphore
+      SEMAPHORE_DB_HOST: postgres
+      SEMAPHORE_DB_PORT: 5432
+      SEMAPHORE_DB: semaphore?sslmode=disable
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_ADMIN_NAME: admin
+      SEMAPHORE_ADMIN_PASSWORD: admin
+      SEMAPHORE_ADMIN_EMAIL: admin@localhost
+    working_dir: /etc/semaphore
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: semaphore
+      POSTGRES_PASSWORD: semaphore
+      POSTGRES_DB: semaphore
+    restart: unless-stopped

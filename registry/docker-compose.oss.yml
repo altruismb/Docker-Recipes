@@ -1,0 +1,45 @@
+#
+# See:
+# - https://docs.docker.com/registry/configuration/
+# - https://docs.docker.com/registry/storage-drivers/oss/
+# - https://docs.docker.com/registry/garbage-collection/
+# - https://github.com/Joxit/docker-registry-ui
+#
+
+version: "3.8"
+
+services:
+
+  registry:
+    image: registry:2
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/etc/docker/registry
+    environment:
+      - REGISTRY_STORAGE=oss
+      - REGISTRY_STORAGE_OSS_ACCESSKEYID=xxxxxxxxxxxxxxxx
+      - REGISTRY_STORAGE_OSS_ACCESSKEYSECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      - REGISTRY_STORAGE_OSS_REGION=oss-cn-beijing
+      - REGISTRY_STORAGE_OSS_INTERNAL=true
+      - REGISTRY_STORAGE_OSS_BUCKET=easypi
+      - REGISTRY_STORAGE_OSS_SECURE=true
+      - REGISTRY_STORAGE_OSS_ROOTDIRECTORY=/registry/
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
+      - REGISTRY_STORAGE_MAINTENANCE_READONLY_ENABLED=false
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm
+      - REGISTRY_AUTH_HTPASSWD_PATH=/etc/docker/registry/htpasswd
+    restart: unless-stopped
+
+  webui:
+    image: joxit/docker-registry-ui:2
+    ports:
+      - "5080:80"
+    environment:
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+      - REGISTRY_TITLE=EasyPi Docker Registry
+      - DELETE_IMAGES=true
+    depends_on:
+      - registry
+    restart: unless-stopped

@@ -1,0 +1,15 @@
+#
+# Dockerfile for pptp
+#
+
+FROM debian:bookworm
+MAINTAINER EasyPi Software Foundation
+
+RUN set -xe \
+    && apt-get update \
+    && apt-get install -y pptp-linux \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docker-entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

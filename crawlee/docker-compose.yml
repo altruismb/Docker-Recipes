@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+
+  my-crawler:
+    image: my-crawler
+    build:
+      context: my-crawler
+      dockerfile: Dockerfile
+    volumes:
+      - ./my-crawler/storage:/usr/src/app/storage

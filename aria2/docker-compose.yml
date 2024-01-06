@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+
+  aria2:
+    image: vimagick/aria2
+    ports:
+      - "6800:6800"
+    volumes:
+      - ./data/etc:/etc/aria2/
+      - ./data/var:/data
+    environment:
+      - TOKEN=0d5e0e73-96f7-4936-b125-e8f5f2296b08
+    restart: unless-stopped
+
+  webui:
+    image: vimagick/ariang
+    ports:
+      - "8080:80"
+    restart: unless-stopped

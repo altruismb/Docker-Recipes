@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+
+  inbound-agent:
+    image: jenkins/inbound-agent
+    init: true
+    container_name: docker-inbound-agent
+    volumes:
+      - ./data:/home/jenkins
+      - ./data/agent:/home/jenkins/agent
+    environment:
+      - JENKINS_URL=http://jenkins.easypi.pro:8080
+      - JENKINS_SECRET=***************************
+      - JENKINS_AGENT_NAME=docker-inbound-agent
+      - JENKINS_AGENT_WORKDIR=/home/jenkins/agent
+    restart: unless-stopped
